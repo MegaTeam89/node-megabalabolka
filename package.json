@@ -1,0 +1,23 @@
+{
+  "name": "node-megabalabolka",
+  "version": "1.0.0",
+  "description": "This package communicates with balcon and gives the information back to nodejs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MegaTeam89/node-megabalabolka.git"
+  },
+  "keywords": [
+    "balabolka",
+    "balcon"
+  ],
+  "author": "MegaT",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/MegaTeam89/node-megabalabolka/issues"
+  },
+  "homepage": "https://github.com/MegaTeam89/node-megabalabolka#readme"
+}
