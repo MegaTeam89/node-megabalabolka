@@ -1,6 +1,6 @@
 {
   "name": "node-megabalabolka",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This package communicates with balcon and gives the information back to nodejs",
   "main": "index.js",
   "scripts": {

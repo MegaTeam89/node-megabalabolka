@@ -16,7 +16,7 @@ function generate(options) {
         else {
             prompt = `balcon`;
             if (options.voice) {
-                prompt += ` -n ${options.voice} `
+                prompt += ` -n "${options.voice}" `
             }
             if (options.text) {
                 prompt += `-t "${options.text.replace(/["]+/g, '')}" `
