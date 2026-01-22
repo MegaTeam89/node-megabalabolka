@@ -1,70 +1,87 @@
 /**
  * Written By MegaT
  * 2022
+ * Patch written in 2026 to fix all of the glaring issues oh my lord
  */
 
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 
 function generate(options) {
     return new Promise(function (resolve, reject) {
-        var prompt;
+        let prompt = [];
         var list = false;
+        var enableErrorLogs = true;
+        if (options.enableErrorLogs == false) {
+            enableErrorLogs = false;
+        }
         if (options.list == true) {
-            prompt = `balcon -l`
+            prompt.push(`-l`)
             list = true;
         }
         else {
-            prompt = `balcon`;
             if (options.voice) {
-                prompt += ` -n "${options.voice}" `
+                prompt.push(`-n`)
+                prompt.push(`${options.voice}`)
             }
             if (options.text) {
-                prompt += `-t "${options.text.replace(/["]+/g, '')}" `
+                prompt.push(`-t`)
+                prompt.push(`${options.text.replace(/["]+/g, '')}`)
             }
             if (options.speed) {
-                prompt += `-s "${options.speed}" `
+                prompt.push(`-s`)
+                prompt.push(`${options.speed}`)
             }
             if (options.pitch) {
-                prompt += `-p "${options.pitch}" `
+                prompt.push(`-p`)
+                prompt.push(`${options.pitch}`)
             }
             if (options.volume) {
-                prompt += `-v "${options.volume}" `
+                prompt.push(`-v`)
+                prompt.push(`${options.volume}`)
             }
             if (!options.writeToBuffer) {
                 if (options.file) {
-                    prompt += `-w "${options.file}" `
+                    prompt.push(`-w`)
+                    prompt.push(`${options.file}`)
                 }
             } else {
-                prompt += `-o`
+                prompt.push(`-o`)
                 if (options.ignoreLength)
-                    prompt += ` -il`
+                    prompt.push(`-il`)
                 if (options.encoding) {
-                    prompt += ` --encoding ${options.encoding}`
+                    prompt.push(`--encoding`)
+                    prompt.push(`${options.encoding}`)
                 }
             }
             if (options.raw) {
-                prompt += ` --raw`
+                prompt.push(`--raw`)
             }
         }
-        const ls = exec(prompt, function (error, stdout, stderr) {
-            if (error) {
-                console.log('STDERR: ' + stderr);
-                console.error(error.stack);
-                console.error('Error code: ' + error.code);
-                console.error('Signal received: ' + error.signal);
-                reject(stderr);
-            }
-            if (options.warnings) {
-                if (stderr)
-                    console.log('Warning: ' + stderr);
-            }
-            if (list = true) {
-                resolve(stdout);
+        const ls = spawn(`balcon`, prompt);
+        let buffers = [];
+        ls.stdout.on("data", (b) => buffers.push(b));
+
+        ls.stderr.on('data', function (data) {
+            if (enableErrorLogs) {
+                console.error('stderr: ' + data.toString());
             }
         });
 
-        ls.on('exit', function (code) {
+        ls.stdout.on("end", async () => {
+            if (list == false) {
+                let res = Buffer.concat(buffers)
+                return resolve(res);
+            } else {
+                let l = Buffer.concat(buffers).toString()
+                //let l = Buffer.concat(buffers).toString().split("\r\n");
+                //l.forEach((e, i)=> l[i] = e.trim());
+                return resolve(l)
+            }
         })
+
+        ls.on('exit', function (code) {
+
+        });
     })
 }
 
